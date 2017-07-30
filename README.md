@@ -1,4 +1,5 @@
 # specium
+[![CircleCI](https://circleci.com/gh/athos/specium.svg?style=shield)](https://circleci.com/gh/athos/specium)
 
 Specium provides the inverse function of `clojure.spec(.alpha)/form`, reducing `eval` calls as much as possible.
 
