@@ -13,7 +13,7 @@
   (eval* x))
 
 (defn- resolve* [x]
-  #?(:clj (resolve x)
+  #?(:clj @(resolve x)
      :cljs (try
              ;; I'm not sure this is the right way to resolve a symbol
              ;; in CLJS
@@ -26,7 +26,7 @@
         :else (->spec* x)))
 
 (defmethod ->spec* `s/spec [[_ form]]
-  (s/spec-impl form (eval* form) nil nil))
+  (s/spec-impl form (->spec form) nil nil))
 
 (defmethod ->spec* `s/and [[_ & pred-forms]]
   (s/and-spec-impl pred-forms (mapv ->spec pred-forms) nil))
