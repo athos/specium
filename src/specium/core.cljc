@@ -41,6 +41,9 @@
         pred-forms (mapv second pairs)]
     (s/or-spec-impl keys pred-forms (mapv ->spec pred-forms) nil)))
 
+(defmethod ->spec* `s/tuple [[_ & preds]]
+  (s/tuple-impl preds (mapv ->spec preds)))
+
 (defmethod ->spec* `s/every [[_ pred & {:keys [into kind count max-count min-count distinct gen-max gen] :as opts}]]
   (let [desc (or (::s/describe opts)
                  `(s/every ~pred

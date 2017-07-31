@@ -25,6 +25,9 @@
       (s/or :int ::int :str ::str)
       (s/or :int integer? :str string?)
 
+      (s/tuple ::int ::str)
+      (s/tuple integer? string?)
+
       (s/every ::int :kind vector? :count 3 :distinct true)
       (s/every integer? :into #{} :min-count 3 :max-count 5 :gen-max 3)
 
