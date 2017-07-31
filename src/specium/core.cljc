@@ -70,6 +70,16 @@
                   (assoc nopts ::s/cpred (fn [x] (every? #(% x) cpreds)))
                   (some-> gen ->spec))))
 
+(defmethod ->spec* `s/every-kv [[_ kpred vpred & opts]]
+  (let [desc `(s/every-kv ~kpred ~vpred ~@opts)]
+    (->spec `(s/every (s/tuple ~kpred ~vpred)
+                      ::s/kfn ~(fn [i v] (nth v 0))
+                      :into {} ::s/describe ~desc ~@opts))))
+
 (defmethod ->spec* `s/coll-of [[_ pred & opts]]
   (let [desc `(s/coll-of ~pred ~@opts)]
     (->spec `(s/every ~pred ::s/conform-all true ::s/describe ~desc ~@opts))))
+
+(defmethod ->spec* `s/map-of [[_ kpred vpred & opts]]
+  (let [desc `(s/map-of ~kpred ~vpred ~@opts)]
+    (->spec `(s/every-kv ~kpred ~vpred ::s/conform-all true :kind map? ::s/describe ~desc ~@opts))))
