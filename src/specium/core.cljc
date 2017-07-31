@@ -83,3 +83,28 @@
 (defmethod ->spec* `s/map-of [[_ kpred vpred & opts]]
   (let [desc `(s/map-of ~kpred ~vpred ~@opts)]
     (->spec `(s/every-kv ~kpred ~vpred ::s/conform-all true :kind map? ::s/describe ~desc ~@opts))))
+
+(defmethod ->spec* `s/* [[_ pred-form]]
+  (s/rep-impl pred-form (->spec pred-form)))
+
+(defmethod ->spec* `s/+ [[_ pred-form]]
+  (s/rep+impl pred-form (->spec pred-form)))
+
+(defmethod ->spec* `s/? [[_ pred-form]]
+  (s/maybe-impl (->spec pred-form) pred-form))
+
+(defmethod ->spec* `s/alt [[_ & key-pred-forms]]
+  (let [pairs (partition 2 key-pred-forms)
+        keys (mapv first pairs)
+        pred-forms (mapv second pairs)]
+    (s/alt-impl keys (mapv ->spec pred-forms) pred-forms)))
+
+(defmethod ->spec* `s/cat [[_ & key-pred-forms]]
+  (let [pairs (partition 2 key-pred-forms)
+        keys (mapv first pairs)
+        pred-forms (mapv second pairs)]
+    (s/cat-impl keys (mapv ->spec pred-forms) pred-forms)))
+
+(defmethod ->spec* `s/& [[_ re & preds]]
+  (let [pv (vec preds)]
+    (s/amp-impl (->spec re) (mapv ->spec pv) pv)))

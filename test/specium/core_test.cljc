@@ -40,4 +40,23 @@
       (s/map-of ::int ::str :count 3 :conform-keys true)
       (s/map-of integer? string? :min-count 3 :max-count 5 :gen-max 3)
 
+      (s/* ::int)
+      (s/* integer?)
+
+      (s/+ ::int)
+      (s/+ integer?)
+
+      (s/? ::int)
+      (s/? integer?)
+
+      (s/alt :int ::int :str ::str)
+      (s/alt :int integer? :str string?)
+
+      (s/cat :int ::int :str ::str)
+      (s/cat :int integer? :str string?)
+
+      ;; Cannot test these cases due to CLJ-2152
+      #_(s/& ::int ::even)
+      #_(s/& integer? even?)
+
       )))
