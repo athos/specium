@@ -24,4 +24,11 @@
 
       (s/or :int ::int :str ::str)
       (s/or :int integer? :str string?)
+
+      (s/every ::int :kind vector? :count 3 :distinct true)
+      (s/every integer? :into #{} :min-count 3 :max-count 5 :gen-max 3)
+
+      (s/coll-of ::int :kind vector? :count 3 :distinct true)
+      (s/coll-of integer? :into #{} :min-count 3 :max-count 5 :gen-max 3)
+
       )))

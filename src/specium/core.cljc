@@ -1,5 +1,6 @@
 (ns specium.core
-  (:require [clojure.spec.alpha :as s]
+  (:require [clojure.core :as c]
+            [clojure.spec.alpha :as s]
             #?(:cljs [cljs.compiler :as comp])))
 
 (def ^:dynamic *eval-fn*
@@ -39,3 +40,33 @@
         keys (mapv first pairs)
         pred-forms (mapv second pairs)]
     (s/or-spec-impl keys pred-forms (mapv ->spec pred-forms) nil)))
+
+(defmethod ->spec* `s/every [[_ pred & {:keys [into kind count max-count min-count distinct gen-max gen] :as opts}]]
+  (let [desc (or (::s/describe opts)
+                 `(s/every ~pred
+                           ~@(c/into [] (comp (remove #(= (key %) ::s/describe))
+                                             cat)
+                                    opts)))
+        nopts (-> opts
+                  (dissoc :gen ::s/describe)
+                  (assoc ::s/kind-form kind ::s/describe desc))
+        cpreds (cond-> [(or (some-> kind resolve*) coll?)]
+                 count (conj #(= count (bounded-count count %)))
+
+                 (or min-count max-count)
+                 (conj #(<= (or min-count 0)
+                            (bounded-count (if max-count
+                                             (inc max-count)
+                                             min-count)
+                                           %)
+                            (or max-count Integer/MAX_VALUE)))
+
+                 distinct (conj #(or (empty? %) (apply distinct? %))))]
+    (s/every-impl pred
+                  (->spec pred)
+                  (assoc nopts ::s/cpred (fn [x] (every? #(% x) cpreds)))
+                  (some-> gen ->spec))))
+
+(defmethod ->spec* `s/coll-of [[_ pred & opts]]
+  (let [desc `(s/coll-of ~pred ~@opts)]
+    (->spec `(s/every ~pred ::s/conform-all true ::s/describe ~desc ~@opts))))
