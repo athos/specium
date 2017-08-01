@@ -30,6 +30,14 @@
   (when form
     (s/spec-impl form (->spec form) nil nil)))
 
+(defmethod ->spec* `s/multi-spec [[_ mm retag]]
+  ;; Essentially identical to `delay`, but won't cache the result.
+  ;; This behavior successfully emulates deref'ing a var.
+  (let [v (reify #?(:clj clojure.lang.IDeref
+                    :cljs cljs.core.IDeref)
+            (deref [this] (resolve* mm)))]
+    (s/multi-spec-impl mm v (->spec retag))))
+
 (defmethod ->spec* `s/and [[_ & pred-forms]]
   (s/and-spec-impl pred-forms (mapv ->spec pred-forms) nil))
 

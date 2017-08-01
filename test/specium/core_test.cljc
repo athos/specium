@@ -7,6 +7,8 @@
 (s/def ::even even?)
 (s/def ::str string?)
 
+(defmulti m :type)
+
 (deftest ->spec-is-inverse-of-form
   (binding [specium/*eval-fn*
             (fn [_] (assert false "eval shouldn't be called"))]
@@ -21,6 +23,8 @@
 
       (s/and ::int ::even)
       (s/and integer? even?)
+
+      (s/multi-spec m :type)
 
       (s/or :int ::int :str ::str)
       (s/or :int integer? :str string?)
