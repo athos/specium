@@ -109,3 +109,9 @@
 (defmethod ->spec* `s/& [[_ re & preds]]
   (let [pv (vec preds)]
     (s/amp-impl (->spec re) (mapv ->spec pv) pv)))
+
+(defmethod ->spec* `s/fspec [[_ & {:keys [args ret fn gen] :or {ret `any?}}]]
+  (s/fspec-impl (->spec `(s/spec ~args)) args
+                (->spec `(s/spec ~ret)) ret
+                (->spec `(s/spec fn)) fn
+                (some-> gen ->spec)))
