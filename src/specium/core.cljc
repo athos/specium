@@ -27,7 +27,8 @@
         :else (->spec* x)))
 
 (defmethod ->spec* `s/spec [[_ form]]
-  (s/spec-impl form (->spec form) nil nil))
+  (when form
+    (s/spec-impl form (->spec form) nil nil)))
 
 (defmethod ->spec* `s/and [[_ & pred-forms]]
   (s/and-spec-impl pred-forms (mapv ->spec pred-forms) nil))
