@@ -68,4 +68,6 @@
 
       (s/conformer name)
 
+      (s/nonconforming (s/cat :i integer? :s string?))
+
       )))

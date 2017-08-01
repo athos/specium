@@ -128,3 +128,6 @@
   (if unf
     (s/spec-impl `(s/conformer ~f ~unf) (->spec f) nil true (->spec unf))
     (s/spec-impl `(s/conformer ~f) (->spec f) nil true)))
+
+(defmethod ->spec* `s/nonconforming [[_ spec]]
+  (s/nonconforming (->spec spec)))
