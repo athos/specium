@@ -62,4 +62,6 @@
       (s/fspec :args (s/cat :x ::int) :ret ::int)
       (s/fspec :args (s/cat :x integer?) :ret integer?)
 
+      (s/conformer name)
+
       )))

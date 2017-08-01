@@ -115,3 +115,8 @@
                 (->spec `(s/spec ~ret)) ret
                 (->spec `(s/spec fn)) fn
                 (some-> gen ->spec)))
+
+(defmethod ->spec* `s/conformer [[_ f unf]]
+  (if unf
+    (s/spec-impl `(s/conformer ~f ~unf) (->spec f) nil true (->spec unf))
+    (s/spec-impl `(s/conformer ~f) (->spec f) nil true)))
