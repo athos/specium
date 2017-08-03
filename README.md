@@ -1,7 +1,14 @@
 # specium
+[![Clojars Project](https://img.shields.io/clojars/v/specium.svg)](https://clojars.org/specium)
 [![CircleCI](https://circleci.com/gh/athos/specium.svg?style=shield)](https://circleci.com/gh/athos/specium)
 
 Specium provides the inverse function of `clojure.spec(.alpha)/form`, reducing `eval` calls as much as possible.
+
+## Installation
+
+Add the following to your `:dependencies`:
+
+[![Clojars Project](https://clojars.org/specium/latest-version.svg)](http://clojars.org/specium)
 
 ## Usage
 
