@@ -1,5 +1,5 @@
 (defproject specium "0.1.0-SNAPSHOT"
-  :description "Inverse of clojure.spec(.alpha)/form, reducing eval calls as much as possible"
+  :description "Inverse of s/form, reducing eval calls as much as possible"
   :url "http://example.com/FIXME"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
