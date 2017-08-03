@@ -1,6 +1,7 @@
 # specium
 [![Clojars Project](https://img.shields.io/clojars/v/specium.svg)](https://clojars.org/specium)
 [![CircleCI](https://circleci.com/gh/athos/specium.svg?style=shield)](https://circleci.com/gh/athos/specium)
+[![codecov](https://codecov.io/gh/athos/specium/branch/master/graph/badge.svg)](https://codecov.io/gh/athos/specium)
 
 Specium provides the inverse function of `clojure.spec(.alpha)/form`, reducing `eval` calls as much as possible.
 
