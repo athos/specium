@@ -95,12 +95,14 @@
   (let [desc (or (::s/describe opts)
                  `(s/every ~pred
                            ~@(c/into [] (comp (remove #(= (key %) ::s/describe))
-                                             cat)
+                                              cat)
                                     opts)))
+        resolved-kind (some-> kind resolve*)
         nopts (-> opts
                   (dissoc :gen ::s/describe)
-                  (assoc ::s/kind-form kind ::s/describe desc))
-        cpreds (cond-> [(or (some-> kind resolve*) coll?)]
+                  (assoc :kind resolved-kind ::s/kind-form kind
+                         ::s/describe desc))
+        cpreds (cond-> [(or resolved-kind coll?)]
                  count (conj #(= count (bounded-count count %)))
 
                  (or min-count max-count)
