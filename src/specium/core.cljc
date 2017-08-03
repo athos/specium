@@ -18,8 +18,8 @@
      :cljs (try
              ;; I'm not sure this is the right way to resolve a symbol
              ;; in CLJS
-             (js/eval (str (comp/munge multi-name)))
-             (catch js/Error _ nil))))
+             (js/eval (comp/munge (str x)))
+             (catch :default _ nil))))
 
 (defn ->spec [x]
   (cond (or (keyword? x) (set? x)) x
@@ -33,9 +33,10 @@
 (defmethod ->spec* `s/multi-spec [[_ mm retag]]
   ;; Essentially identical to `delay`, but won't cache the result.
   ;; This behavior successfully emulates deref'ing a var.
-  (let [v (reify #?(:clj clojure.lang.IDeref
-                    :cljs cljs.core.IDeref)
-            (deref [this] (resolve* mm)))]
+  (let [v #?(:clj (reify clojure.lang.IDeref
+                    (deref [this] (resolve* mm)))
+             :cljs (reify IDeref
+                     (-deref [this] (resolve* mm))))]
     (s/multi-spec-impl mm v (->spec retag))))
 
 (defmethod ->spec* `s/and [[_ & pred-forms]]
@@ -111,7 +112,8 @@
                                              (inc max-count)
                                              min-count)
                                            %)
-                            (or max-count Integer/MAX_VALUE)))
+                            (or max-count #?(:clj Integer/MAX_VALUE
+                                             :cljs s/MAX_INT))))
 
                  distinct (conj #(or (empty? %) (apply distinct? %))))]
     (s/every-impl pred
