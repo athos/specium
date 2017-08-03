@@ -32,6 +32,11 @@
       (s/tuple ::int ::str)
       (s/tuple integer? string?)
 
+      (s/keys :req [::int] :req-un [::str])
+      (s/keys :req [(or (and ::int ::even) ::str)])
+      (s/keys :req-un [(or (and ::int ::even) ::str)])
+      (s/keys :opt [::int] :opt-un [::str])
+
       (s/every ::int :kind vector? :count 3 :distinct true)
       (s/every integer? :into #{} :min-count 3 :max-count 5 :gen-max 3)
 

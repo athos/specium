@@ -53,6 +53,44 @@
 (defmethod ->spec* `s/tuple [[_ & preds]]
   (s/tuple-impl preds (mapv ->spec preds)))
 
+(defn- parse-req [rk f]
+  (letfn [(rec [x]
+            (if (keyword? x)
+              (let [k (f x)]
+                [`(contains? ~'% ~k)
+                 (fn [x] (contains? x k))])
+              (let [[op & args] x, form-pred-pairs (map rec args)
+                    forms (map first form-pred-pairs)
+                    preds (map second form-pred-pairs)]
+                (case op
+                  and [`(and ~@forms)
+                       (fn [x] (every? #(% x) preds))]
+                  or [`(or ~@forms)
+                      (fn [x] (some #(% x) preds))]))))]
+    (map rec rk)))
+
+(defmethod ->spec* `s/keys [[_ & {:keys [req req-un opt opt-un gen]}]]
+  (let [unk #(-> % name keyword)
+        req-keys (filterv keyword? (flatten req))
+        req-un-specs (filterv keyword? (flatten req-un))
+        req-specs (into req-keys req-un-specs)
+        req-keys (into req-keys (map unk req-un-specs))
+        opt-keys (into (vec opt) (map unk opt-un))
+        opt-specs (into (vec opt) opt-un)
+        form-pred-pairs (-> [[`(map? ~'%) map?]]
+                            (into (parse-req req identity))
+                            (into (parse-req req-un unk)))
+        pred-forms (mapv (fn [[form _]] `(fn [~'%] ~form))
+                         form-pred-pairs)
+        pred-exprs (mapv second form-pred-pairs)
+        keys-pred (fn [x] (every? #(% x) pred-exprs))]
+    (s/map-spec-impl {:req req :opt opt
+                      :req-un req-un :opt-un opt-un
+                      :req-keys req-keys :req-specs req-specs
+                      :opt-keys opt-keys :opt-specs opt-specs
+                      :pred-forms pred-forms :pred-exprs pred-exprs
+                      :keys-pred keys-pred :gfn (some-> gen ->spec)})))
+
 (defmethod ->spec* `s/every [[_ pred & {:keys [into kind count max-count min-count distinct gen-max gen] :as opts}]]
   (let [desc (or (::s/describe opts)
                  `(s/every ~pred
