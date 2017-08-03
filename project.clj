@@ -10,6 +10,20 @@
   :test-paths ["test/cljc"]
 
   :plugins [[lein-cloverage "1.0.9"]
+            [lein-doo "0.1.7"]
             [lein-eftest "0.3.1"]]
+
+  :cljsbuild {:builds [{:id "test"
+                        :source-paths ["src" "test/cljc" "test/cljs"]
+                        :compiler {:output-to "target/out/test.js"
+                                   :output-dir "target/out"
+                                   :main specium.test-runner
+                                   :optimizations :none
+                                   :target :nodejs}}]}
+
   :eftest {:report eftest.report.pretty/report}
-  :aliases {"test" ["eftest"]})
+
+  :aliases {"test-all" ["do" ["test-clj"] ["test-cljs"]]
+            "test-clj" ["eftest"]
+            "test-cljs" ["do" ["test-cljs-node" "once"]]
+            "test-cljs-node" ["doo" "node" "test"]})
