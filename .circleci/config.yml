@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: theasp/clojurescript-nodejs:alpine
+      - image: circleci/clojure:lein-browsers
 
     working_directory: ~/repo
 
