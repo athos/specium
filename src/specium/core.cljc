@@ -22,13 +22,13 @@
              (catch :default _ nil))))
 
 (defn ->spec [x]
-  (cond (or (keyword? x) (set? x)) x
+  (cond (or (keyword? x) (set? x) (fn? x)) x
         (symbol? x) (resolve* x)
         :else (->spec* x)))
 
-(defmethod ->spec* `s/spec [[_ form]]
+(defmethod ->spec* `s/spec [[_ form & {:keys [gen]}]]
   (when form
-    (s/spec-impl form (->spec form) nil nil)))
+    (s/spec-impl form (->spec form) (some-> gen ->spec) nil)))
 
 (defmethod ->spec* `s/multi-spec [[_ mm retag]]
   ;; Essentially identical to `delay`, but won't cache the result.
@@ -163,7 +163,7 @@
 (defmethod ->spec* `s/fspec [[_ & {:keys [args ret fn gen] :or {ret `any?}}]]
   (s/fspec-impl (->spec `(s/spec ~args)) args
                 (->spec `(s/spec ~ret)) ret
-                (->spec `(s/spec fn)) fn
+                (->spec `(s/spec ~fn)) fn
                 (some-> gen ->spec)))
 
 (defmethod ->spec* `s/conformer [[_ f unf]]
