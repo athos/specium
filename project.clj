@@ -1,4 +1,4 @@
-(defproject specium "0.1.0-SNAPSHOT"
+(defproject specium "0.1.0"
   :description "Inverse of s/form, reducing eval calls as much as possible"
   :url "https://github.com/athos/specium"
   :license {:name "Eclipse Public License"
